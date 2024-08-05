@@ -33,6 +33,8 @@ open class LineChartRenderer: LineRadarRenderer
     {
         guard let lineData = dataProvider?.lineData else { return }
 
+        heightLightXValue = -1
+        
         let sets = lineData.dataSets as? [LineChartDataSet]
         assert(sets != nil, "Datasets for LineChartRenderer must conform to ILineChartDataSet")
 
@@ -40,6 +42,7 @@ open class LineChartRenderer: LineRadarRenderer
         sets!.lazy
             .filter(\.isVisible)
             .forEach(drawDataSet)
+    
     }
     
     @objc open func drawDataSet(context: CGContext, dataSet: LineChartDataSetProtocol)
@@ -520,8 +523,6 @@ open class LineChartRenderer: LineRadarRenderer
             let dataProvider = dataProvider,
             let lineData = dataProvider.lineData
         else { return }
-
-        heightLightXValue = -1
         
         if isDrawingValuesAllowed(dataProvider: dataProvider)
         {
@@ -565,6 +566,15 @@ open class LineChartRenderer: LineRadarRenderer
                     pt.y = CGFloat(e.y * phaseY)
                     pt = pt.applying(valueToPixelMatrix)
                     
+                    context.saveGState()
+                    context.setLineWidth(1.0)
+                    context.setStrokeColor(UIColor(red: 227/255.0, green: 134/255.0, blue: 85/255.0, alpha: 0.23).cgColor)
+                    context.setLineDash(phase: 4.0, lengths: [4.0,2.0])
+                    context.beginPath()
+                    context.move(to: CGPoint(x: pt.x, y: pt.y+2.0))
+                    context.addLine(to: CGPoint(x: pt.x, y: viewPortHandler.contentBottom))
+                    context.strokePath()
+
                     if (!viewPortHandler.isInBoundsRight(pt.x))
                     {
                         break
@@ -586,7 +596,7 @@ open class LineChartRenderer: LineRadarRenderer
                                          align: .center,
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont,
-                                                      .foregroundColor: dataSet.valueTextColorAt(j)])
+                                                      .foregroundColor: e.x == heightLightXValue ? UIColor(red: 210/255.0, green: 89/255.0, blue: 22/255.0, alpha: 1.0): dataSet.valueTextColorAt(j)])
                     }
                     
                     if let icon = e.icon, dataSet.isDrawIconsEnabled
@@ -597,6 +607,11 @@ open class LineChartRenderer: LineRadarRenderer
                                           size: icon.size)
                     }
                 }
+                
+                
+            
+                context.restoreGState()
+                
             }
         }
     }
