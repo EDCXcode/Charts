@@ -21,7 +21,7 @@ open class LineChartRenderer: LineRadarRenderer
     private lazy var accessibilityOrderedElements: [[NSUIAccessibilityElement]] = accessibilityCreateEmptyOrderedElements()
 
     @objc open weak var dataProvider: LineChartDataProvider?
-    
+    var heightLightXValue:Double = -1
     @objc public init(dataProvider: LineChartDataProvider, animator: Animator, viewPortHandler: ViewPortHandler)
     {
         super.init(animator: animator, viewPortHandler: viewPortHandler)
@@ -521,6 +521,8 @@ open class LineChartRenderer: LineRadarRenderer
             let lineData = dataProvider.lineData
         else { return }
 
+        heightLightXValue = -1
+        
         if isDrawingValuesAllowed(dataProvider: dataProvider)
         {
             let phaseY = animator.phaseY
@@ -726,7 +728,14 @@ open class LineChartRenderer: LineRadarRenderer
                     
                     if drawCircleHole
                     {
-                        context.setFillColor(dataSet.circleHoleColor!.cgColor)
+
+                        //选中的颜色 rgba(255, 180, 61, 1)
+                        if heightLightXValue == e.x{
+                            context.setFillColor(dataSet.circleColors.first!.cgColor)
+                        }else{
+                            context.setFillColor(dataSet.circleHoleColor!.cgColor)
+                        }
+                        
 
                         // The hole rect
                         rect.origin.x = pt.x - circleHoleRadius
@@ -771,6 +780,8 @@ open class LineChartRenderer: LineRadarRenderer
                 continue
             }
 
+            heightLightXValue = e.x
+            
             context.setStrokeColor(set.highlightColor.cgColor)
             context.setLineWidth(set.highlightLineWidth)
             if set.highlightLineDashLengths != nil
