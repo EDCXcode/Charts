@@ -103,6 +103,17 @@ open class RadarChartRenderer: LineRadarRenderer
             let p = center.moving(distance: CGFloat((e.y - chart.chartYMin) * Double(factor) * phaseY),
                                   atAngle: sliceangle * CGFloat(j) * CGFloat(phaseX) + chart.rotationAngle)
             
+            //设置圆弧的起始点和终点相同，可以绘制一个完整的圆
+            let arcStartAngle = CGFloat(0)
+            let arcEndAngle = CGFloat.pi * 2
+            // 设置圆弧的颜色 #F6802F
+            context.setFillColor(UIColor(red: 0.96, green: 0.5, blue: 0.18, alpha: 1).cgColor)
+            // 添加圆弧到图形上下文
+            context.addArc(center: p, radius: 3, startAngle: arcStartAngle, endAngle: arcEndAngle, clockwise: true)
+            // 绘制图形
+            context.fillPath()
+          
+            
             if p.x.isNaN
             {
                 continue
