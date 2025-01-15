@@ -60,7 +60,7 @@ class RadarChartViewController: DemoBaseViewController {
         yAxis.labelFont = .systemFont(ofSize: 9, weight: .light)
         yAxis.labelCount = 5
         yAxis.axisMinimum = 0
-        yAxis.axisMaximum = 80
+        yAxis.axisMaximum = 100
         yAxis.drawLabelsEnabled = false
         
         let l = chartView.legend
@@ -89,7 +89,7 @@ class RadarChartViewController: DemoBaseViewController {
     }
     
     func setChartData() {
-        let mult: UInt32 = 80
+        let mult: UInt32 = 100
         let min: UInt32 = 20
         let cnt = 5
         
@@ -124,6 +124,7 @@ class RadarChartViewController: DemoBaseViewController {
     }
     
     override func optionTapped(_ option: Option) {
+        
         guard let data = chartView.data else { return }
 
         switch option {
