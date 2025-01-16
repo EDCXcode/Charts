@@ -41,11 +41,16 @@ open class RadarChartView: PieRadarChartViewBase
     /// the object reprsenting the y-axis labels
     private var _yAxis: YAxis!
     
+    /// Whether to highlight the dots
+    @objc open  var isHighlight: Bool = false
+    
     internal var _yAxisRenderer: YAxisRendererRadarChart!
     internal var _xAxisRenderer: XAxisRendererRadarChart!
     
-    public override init(frame: CGRect)
+    public required init(frame: CGRect,isHighlight:Bool? = false)
     {
+        self.isHighlight = isHighlight!
+        
         super.init(frame: frame)
     }
     
@@ -61,7 +66,7 @@ open class RadarChartView: PieRadarChartViewBase
         _yAxis = YAxis(position: .left)
         _yAxis.labelXOffset = 10.0
         
-        renderer = RadarChartRenderer(chart: self, animator: chartAnimator, viewPortHandler: viewPortHandler)
+        renderer = RadarChartRenderer(chart: self, animator: chartAnimator, viewPortHandler: viewPortHandler,isHighlight: isHighlight)
         
         _yAxisRenderer = YAxisRendererRadarChart(viewPortHandler: viewPortHandler, axis: _yAxis, chart: self)
         _xAxisRenderer = XAxisRendererRadarChart(viewPortHandler: viewPortHandler, axis: xAxis, chart: self)
