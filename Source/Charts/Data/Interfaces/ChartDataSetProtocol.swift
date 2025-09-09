@@ -208,6 +208,9 @@ public protocol ChartDataSetProtocol
     
     /// the font for the value-text labels
     var valueFont: NSUIFont { get set }
+   
+    
+    var selectValueFont: NSUIFont { get set }
     
     /// The rotation angle (in degrees) for value-text labels
     var valueLabelAngle: CGFloat { get set }
@@ -267,4 +270,6 @@ public protocol ChartDataSetProtocol
     
     /// `true` if this DataSet is visible inside the chart, or `false` ifit is currently hidden.
     var isVisible: Bool { get }
+    
+    var isShowYDashedline: Bool { get set } //是否显示Y默认线
 }

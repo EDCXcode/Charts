@@ -38,7 +38,10 @@ open class LineChartRenderer: LineRadarRenderer
         let sets = lineData.dataSets as? [LineChartDataSet]
         assert(sets != nil, "Datasets for LineChartRenderer must conform to ILineChartDataSet")
 
+        
         let drawDataSet = { self.drawDataSet(context: context, dataSet: $0) }
+        
+        
         sets!.lazy
             .filter(\.isVisible)
             .forEach(drawDataSet)
@@ -538,6 +541,8 @@ open class LineChartRenderer: LineRadarRenderer
                 else { continue }
                 
                 let valueFont = dataSet.valueFont
+               
+                let svalueFont = dataSet.selectValueFont
                 
                 let formatter = dataSet.valueFormatter
                 
@@ -565,16 +570,20 @@ open class LineChartRenderer: LineRadarRenderer
                     pt.x = CGFloat(e.x)
                     pt.y = CGFloat(e.y * phaseY)
                     pt = pt.applying(valueToPixelMatrix)
-                    
-                    context.saveGState()
-                    context.setLineWidth(1.0)
-                    context.setStrokeColor(UIColor(red: 227/255.0, green: 134/255.0, blue: 85/255.0, alpha: 0.23).cgColor)
-                    context.setLineDash(phase: 4.0, lengths: [4.0,2.0])
-                    context.beginPath()
-                    context.move(to: CGPoint(x: pt.x, y: pt.y+2.0))
-                    context.addLine(to: CGPoint(x: pt.x, y: viewPortHandler.contentBottom))
-                    context.strokePath()
 
+                    
+                    //是否显示默认虚线
+                    if dataSet.isShowYDashedline {
+                        context.saveGState()
+                        context.setLineWidth(1.0)
+                        context.setStrokeColor(UIColor(red: 227/255.0, green: 134/255.0, blue: 85/255.0, alpha: 0.23).cgColor)
+                        context.setLineDash(phase: 4.0, lengths: [4.0,2.0])
+                        context.beginPath()
+                        context.move(to: CGPoint(x: pt.x, y: pt.y+2.0))
+                        context.addLine(to: CGPoint(x: pt.x, y: viewPortHandler.contentBottom))
+                        context.strokePath()
+                    }
+                    
                     if (!viewPortHandler.isInBoundsRight(pt.x))
                     {
                         break
@@ -587,6 +596,7 @@ open class LineChartRenderer: LineRadarRenderer
                     
                     if dataSet.isDrawValuesEnabled
                     {
+                  
                         context.drawText(formatter.stringForValue(e.y,
                                                                   entry: e,
                                                                   dataSetIndex: i,
@@ -595,8 +605,8 @@ open class LineChartRenderer: LineRadarRenderer
                                                      y: pt.y - CGFloat(valOffset) - valueFont.lineHeight),
                                          align: .center,
                                          angleRadians: angleRadians,
-                                         attributes: [.font: valueFont,
-                                                      .foregroundColor: e.x == heightLightXValue ? UIColor(red: 210/255.0, green: 89/255.0, blue: 22/255.0, alpha: 1.0): dataSet.valueTextColorAt(j)])
+                                         attributes: [.font:  e.x == heightLightXValue ? svalueFont : valueFont,
+                                                      .foregroundColor: e.x == heightLightXValue ? dataSet.highlightColor: dataSet.valueTextColorAt(j)])
                     }
                     
                     if let icon = e.icon, dataSet.isDrawIconsEnabled
@@ -933,3 +943,4 @@ open class LineChartRenderer: LineRadarRenderer
         return element
     }
 }
+

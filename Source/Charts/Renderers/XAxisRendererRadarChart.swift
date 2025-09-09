@@ -43,6 +43,7 @@ open class XAxisRendererRadarChart: XAxisRenderer
         
         let center = chart.centerOffsets
         
+        
         for i in 0..<(chart.data?.maxEntryCountSet?.entryCount ?? 0)
         {
             let label = axis.valueFormatter?.stringForValue(Double(i), axis: axis) ?? ""

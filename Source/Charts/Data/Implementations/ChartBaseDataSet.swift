@@ -15,6 +15,8 @@ import CoreGraphics
 
 open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
 {
+
+    
     public required override init()
     {
         super.init()
@@ -304,6 +306,12 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
     
     /// the font for the value-text labels
     open var valueFont: NSUIFont = NSUIFont.systemFont(ofSize: 7.0)
+    
+    /// the font for the value-text labels
+    open var selectValueFont: NSUIFont = NSUIFont.systemFont(ofSize: 7.0)
+    
+    
+    open var isShowYDashedline: Bool = false
     
     /// The rotation angle (in degrees) for value-text labels
     open var valueLabelAngle: CGFloat = CGFloat(0.0)
