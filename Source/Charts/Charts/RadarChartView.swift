@@ -42,15 +42,18 @@ open class RadarChartView: PieRadarChartViewBase
     private var _yAxis: YAxis!
     
     /// Whether to highlight the dots
-    @objc open  var isHighlight: Bool = false
+    open  var isHighlight: Bool = false
+    
+    /// Line Dash
+    open var dashPattern :[CGFloat] = []
     
     internal var _yAxisRenderer: YAxisRendererRadarChart!
     internal var _xAxisRenderer: XAxisRendererRadarChart!
     
-    public required init(frame: CGRect,isHighlight:Bool? = false)
+    public required init(frame: CGRect,isHighlight:Bool? = false,dashPattern:[CGFloat]?=[])
     {
         self.isHighlight = isHighlight!
-        
+        self.dashPattern = dashPattern!
         super.init(frame: frame)
     }
     
@@ -66,7 +69,7 @@ open class RadarChartView: PieRadarChartViewBase
         _yAxis = YAxis(position: .left)
         _yAxis.labelXOffset = 10.0
         
-        renderer = RadarChartRenderer(chart: self, animator: chartAnimator, viewPortHandler: viewPortHandler,isHighlight: isHighlight)
+        renderer = RadarChartRenderer(chart: self, animator: chartAnimator, viewPortHandler: viewPortHandler,isHighlight: isHighlight,dashPattern:dashPattern)
         
         _yAxisRenderer = YAxisRendererRadarChart(viewPortHandler: viewPortHandler, axis: _yAxis, chart: self)
         _xAxisRenderer = XAxisRendererRadarChart(viewPortHandler: viewPortHandler, axis: xAxis, chart: self)
@@ -223,3 +226,4 @@ open class RadarChartView: PieRadarChartViewBase
     /// The range of y-values this chart can display.
     @objc open var yRange: Double { return _yAxis.axisRange }
 }
+

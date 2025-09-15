@@ -12,6 +12,15 @@
 import Foundation
 import CoreGraphics
 
+
+
+@objc public enum DGGradientDirection:Int {
+    case radial    // 从中心向外辐射
+    case vertical  // 从上到下
+    case horizontal // 从左到右
+    case leftToptorightbot //左上右下
+}
+
 @objc
 public protocol LineRadarChartDataSetProtocol: LineScatterCandleRadarChartDataSetProtocol
 {
@@ -42,4 +51,12 @@ public protocol LineRadarChartDataSetProtocol: LineScatterCandleRadarChartDataSe
     
     /// `true` if filled drawing is enabled, `false` if not
     var isDrawFilledEnabled: Bool { get }
+    
+    //渐变颜色数组
+    var gradientColors: [UIColor]?  { get set }
+    
+    //渐变方向
+    var gradientDirection: DGGradientDirection {get  set }
 }
+
+

@@ -25,14 +25,19 @@ open class RadarChartRenderer: LineRadarRenderer
     }()
 
     @objc open weak var chart: RadarChartView?
+    //雷达图的点是否绘制高亮点
     open var isHighlight: Bool = false
+    //内线设置虚线
+    open var dashPattern :[CGFloat] = []
     
-     public init(chart: RadarChartView, animator: Animator, viewPortHandler: ViewPortHandler,isHighlight:Bool? = false)
+
+    
+     public init(chart: RadarChartView, animator: Animator, viewPortHandler: ViewPortHandler,isHighlight:Bool? = false,dashPattern:[CGFloat]?=[])
     {
         super.init(animator: animator, viewPortHandler: viewPortHandler)
         
         self.isHighlight = isHighlight!
-        
+        self.dashPattern = dashPattern!
         self.chart = chart
     }
     
@@ -113,7 +118,7 @@ open class RadarChartRenderer: LineRadarRenderer
                 // 设置圆弧的颜色 #F6802F
                 context.setFillColor(UIColor(red: 0.96, green: 0.5, blue: 0.18, alpha: 1).cgColor)
                 // 添加圆弧到图形上下文
-                context.addArc(center: p, radius: 3, startAngle: arcStartAngle, endAngle: arcEndAngle, clockwise: true)
+                context.addArc(center: p, radius: 4, startAngle: arcStartAngle, endAngle: arcEndAngle, clockwise: true)
                 // 绘制图形
                 context.fillPath()
             }
@@ -172,7 +177,81 @@ open class RadarChartRenderer: LineRadarRenderer
             }
             else
             {
-                drawFilledPath(context: context, path: path, fillColor: dataSet.fillColor, fillAlpha: dataSet.fillAlpha)
+                if (dataSet.gradientColors?.count == 0){
+                    drawFilledPath(context: context, path: path, fillColor: dataSet.fillColor, fillAlpha: dataSet.fillAlpha)
+                }else{
+                    
+                    path.closeSubpath()
+                    
+                    context.saveGState()
+                    context.beginPath()
+                    context.addPath(path)
+                    
+                    // 创建裁剪路径
+                    context.clip()
+                    
+                    // 创建渐变
+                    let colors = dataSet.gradientColors?.map { $0.cgColor } as! CFArray
+                    let colorSpace = CGColorSpaceCreateDeviceRGB()
+                    
+                    // 根据方向设置渐变起点和终点
+                    var startPoint: CGPoint
+                    var endPoint: CGPoint
+                    
+                    switch  dataSet.gradientDirection {
+                    case .radial:
+                        // 径向渐变 - 从中心向外
+                        let locations: [CGFloat] = [0.0, 1.0]
+                        let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: locations)!
+                        
+                        context.drawRadialGradient(
+                            gradient,
+                            startCenter: center,
+                            startRadius: 0,
+                            endCenter: center,
+                            endRadius: chart.yRange * factor,
+                            options: []
+                        )
+                        
+                    case .vertical:
+                        // 垂直渐变 - 从上到下
+                        startPoint = CGPoint(x: center.x, y: chart.viewPortHandler.contentTop)
+                        endPoint = CGPoint(x: center.x, y: chart.viewPortHandler.contentBottom)
+                        
+                        let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: nil)!
+                        context.drawLinearGradient(
+                            gradient,
+                            start: startPoint,
+                            end: endPoint,
+                            options: []
+                        )
+                        
+                    case .horizontal:
+                        // 水平渐变 - 从左到右
+                        startPoint = CGPoint(x: chart.viewPortHandler.contentLeft, y: center.y)
+                        endPoint = CGPoint(x: chart.viewPortHandler.contentRight, y: center.y)
+                        
+                        let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: nil)!
+                        context.drawLinearGradient(
+                            gradient,
+                            start: startPoint,
+                            end: endPoint,
+                            options: []
+                        )
+                    case .leftToptorightbot:
+                        startPoint = CGPoint(x: chart.viewPortHandler.contentLeft, y: 0)
+                        endPoint = CGPoint(x: chart.viewPortHandler.contentRight, y: center.y)
+                        
+                        let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: nil)!
+                        context.drawLinearGradient(
+                            gradient,
+                            start: startPoint,
+                            end: endPoint,
+                            options: []
+                        )
+                    }
+                    context.restoreGState()
+                }
             }
         }
         
@@ -203,6 +282,7 @@ open class RadarChartRenderer: LineRadarRenderer
 
         context.restoreGState()
     }
+        
     
     open override func drawValues(context: CGContext)
     {
@@ -318,6 +398,13 @@ open class RadarChartRenderer: LineRadarRenderer
             _webLineSegmentsBuffer[1].y = p.y
             
             context.strokeLineSegments(between: _webLineSegmentsBuffer)
+        }
+        
+  
+        
+        // 设置虚线模式
+        if !dashPattern.isEmpty{
+            context.setLineDash(phase: 0, lengths: dashPattern)
         }
         
         // draw the inner-web
@@ -482,3 +569,4 @@ open class RadarChartRenderer: LineRadarRenderer
         return element
     }
 }
+

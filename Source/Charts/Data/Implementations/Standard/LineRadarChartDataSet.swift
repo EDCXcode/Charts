@@ -15,6 +15,7 @@ import CoreGraphics
 
 open class LineRadarChartDataSet: LineScatterCandleRadarChartDataSet, LineRadarChartDataSetProtocol
 {
+    
     // MARK: - Data functions and accessors
     
     // MARK: - Styling functions and accessors
@@ -33,6 +34,8 @@ open class LineRadarChartDataSet: LineScatterCandleRadarChartDataSet, LineRadarC
         }
     }
     
+   
+    
     /// The object that is used for filling the area below the line.
     /// **default**: nil
     open var fill: Fill?
@@ -42,6 +45,10 @@ open class LineRadarChartDataSet: LineScatterCandleRadarChartDataSet, LineRadarC
     open var fillAlpha = CGFloat(0.33)
     
     private var _lineWidth = CGFloat(1.0)
+    
+    public var gradientDirection: DGGradientDirection = .leftToptorightbot
+    
+    public var gradientColors: [UIColor]?
     
     /// line width of the chart (min = 0.0, max = 10)
     ///
@@ -83,3 +90,4 @@ open class LineRadarChartDataSet: LineScatterCandleRadarChartDataSet, LineRadarC
     }
     
 }
+
